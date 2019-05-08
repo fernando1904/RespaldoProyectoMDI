@@ -15,23 +15,30 @@ import java.awt.Dimension;
 public class Encriptador extends JPanel implements ActionListener {
     
     private String encresult="";
+    private String desencresult="";
     private int cod[][] = new int[4][8];
     private int bin1[][] = new int[4][8];
+    private int bin2[][] = new int[4][8];
     private int binCod[][] = new int[4][8];
+    private int binDecod[][] = new int[4][8];
+    private char char1;
+    private char char2;
+    private char char3;
+    private char char4;
     private int v1=0;
     private int v2=0;
     private int v3=0;
     private int v4=0;
+    private String vs1="";
+    private String vs2="";
+    private String vs3="";
+    private String vs4="";
     private int index1=0;
     private int index2=0;
     private String texto="";
     private int tamTexto;
     private int dato=0;
     private int con1 = 7;
-    private char char1;
-    private char char2;
-    private char char3;
-    private char char4;
     private Tablero tablero1 = new Tablero();
     
     protected JTextArea Visor1;
@@ -78,6 +85,15 @@ public class Encriptador extends JPanel implements ActionListener {
     }
     
     final void Desencriptar() {
+        texto = Visor1.getText();
+        while ((!texto.equals(""))) {
+            extraerCaracteres();
+            convertiraBinario(1);
+            encriptacion(1);
+        }
+        texto = desencresult;
+        Visor2.setText(desencresult);
+        desencresult = "";
     }
     
     final void extraerCaracteres() {
@@ -126,6 +142,7 @@ public class Encriptador extends JPanel implements ActionListener {
         con1 = 0;
         while ((con1 < 8)) {
             bin1[binNro][con1] = 0;
+            bin2[binNro][con1] = 0;
             con1++;
         }
         con1 = 7;
@@ -134,6 +151,14 @@ public class Encriptador extends JPanel implements ActionListener {
                 res = dec % 2;
                 bin1[binNro][con1] = res;
                 dec = (int)dec / 2;
+                con1--;
+            }while(dec != 0);
+        }
+        else {
+            do{
+                res = (dec % 2);
+                bin2[binNro][con1] = res;
+                dec = dec/2;
                 con1--;
             }while(dec != 0);
         }
@@ -147,6 +172,7 @@ public class Encriptador extends JPanel implements ActionListener {
                 for (int i = 0; i <= 3; i++) {
                     for (int j = 0; j <= 7; j++) {
                         dato = cod[i][j];
+                        // MsgBox("Dato: " & dato)
                         switch (dato) {
                             case 1:
                             case 2:
@@ -197,8 +223,11 @@ public class Encriptador extends JPanel implements ActionListener {
                                 break;
                         }
                         binCod[i][j] = bin1[index1][index2];
+                        // MsgBox("binCod: " & binCod(i, j))
                     }
+                    
                 }
+                
                 v1 = ((binCod[0][0] * 10000000) 
                             + ((binCod[0][1] * 1000000) 
                             + ((binCod[0][2] * 100000) 
@@ -232,19 +261,125 @@ public class Encriptador extends JPanel implements ActionListener {
                             + ((binCod[3][6] * 10) 
                             + (binCod[3][7] * 1))))))));
                 break;
+            case 1:
+                for (int i = 0; (i <= 3); i++) {
+                    for (int j = 0; (j <= 7); j++) {
+                        dato = cod[i][j];
+                        switch (dato) {
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                            case 5:
+                            case 6:
+                            case 7:
+                            case 8:
+                                index1 = 0;
+                                index2 = (dato - 1);
+                                break;
+                            case 9:
+                            case 10:
+                            case 11:
+                            case 12:
+                            case 13:
+                            case 14:
+                            case 15:
+                            case 16:
+                                dato -= 8;
+                                index1 = 1;
+                                index2 = (dato - 1);
+                                break;
+                            case 17:
+                            case 18:
+                            case 19:
+                            case 20:
+                            case 21:
+                            case 22:
+                            case 23:
+                            case 24:
+                                dato -= 16;
+                                index1 = 2;
+                                index2 = (dato - 1);
+                                break;
+                            case 25:
+                            case 26:
+                            case 27:
+                            case 28:
+                            case 29:
+                            case 30:
+                            case 31:
+                            case 32:
+                                dato -= 24;
+                                index1 = 3;
+                                index2 = (dato - 1);
+                                break;
+                        }
+                        binDecod[index1][index2] = bin2[i][j];
+                    }
+                    
+                }
+                
+                v1 = ((binDecod[0][0] * 10000000) 
+                            + ((binDecod[0][1] * 1000000) 
+                            + ((binDecod[0][2] * 100000) 
+                            + ((binDecod[0][3] * 10000) 
+                            + ((binDecod[0][4] * 1000) 
+                            + ((binDecod[0][5] * 100) 
+                            + ((binDecod[0][6] * 10) 
+                            + (binDecod[0][7] * 1))))))));
+                v2 = ((binDecod[1][0] * 10000000) 
+                            + ((binDecod[1][1] * 1000000) 
+                            + ((binDecod[1][2] * 100000) 
+                            + ((binDecod[1][3] * 10000) 
+                            + ((binDecod[1][4] * 1000) 
+                            + ((binDecod[1][5] * 100) 
+                            + ((binDecod[1][6] * 10) 
+                            + (binDecod[1][7] * 1))))))));
+                v3 = ((binDecod[2][0] * 10000000) 
+                            + ((binDecod[2][1] * 1000000) 
+                            + ((binDecod[2][2] * 100000) 
+                            + ((binDecod[2][3] * 10000) 
+                            + ((binDecod[2][4] * 1000) 
+                            + ((binDecod[2][5] * 100) 
+                            + ((binDecod[2][6] * 10) 
+                            + (binDecod[2][7] * 1))))))));
+                v4 = ((binDecod[3][0] * 10000000) 
+                            + ((binDecod[3][1] * 1000000) 
+                            + ((binDecod[3][2] * 100000) 
+                            + ((binDecod[3][3] * 10000) 
+                            + ((binDecod[3][4] * 1000) 
+                            + ((binDecod[3][5] * 100) 
+                            + ((binDecod[3][6] * 10) 
+                            + (binDecod[3][7] * 1))))))));
+                break;
         }
         v1=BnADec(v1);
         v2=BnADec(v2);
         v3=BnADec(v3);
         v4=BnADec(v4);
-        //showMessageDialog(null, v1 + " " + v2 + " " + v3 + " " + v4);
+//        showMessageDialog(null, v1 + " " + v2 + " " + v3 + " " + v4);
         char1 = (char)v1;
         char2 = (char)v2;
         char3 = (char)v3;
         char4 = (char)v4;
-        //showMessageDialog(null, char1 + " " + char2 + " " + char3 + " " + char4);
+//        showMessageDialog(null, char1 + " " + char2 + " " + char3 + " " + char4);
         if ((tipo == 0)) {
             encresult = encresult + char1 + char2 + char3 + char4;
+        }
+        else {
+            if (char2=='|' && char3=='|' && char4=='|'){
+                char2=Character.MIN_VALUE;
+                char3=Character.MIN_VALUE;
+                char4=Character.MIN_VALUE;
+            }
+            if (char3=='|' && char4=='|'){
+                char3=Character.MIN_VALUE;
+                char4=Character.MIN_VALUE;
+            }
+            if (char4=='|'){
+                char4=Character.MIN_VALUE;
+            }
+            desencresult = desencresult + char1 + char2 + char3 + char4;
         }
     }
     
