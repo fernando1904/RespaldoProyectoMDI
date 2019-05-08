@@ -29,11 +29,12 @@ public class Tablero extends JPanel implements ActionListener{
     public static int cod[][] = new int[16][8]; 
     private int con1 = 0;
     private int con2 = 0;
+    private static boolean botonDesenc = true;
     public static JPanel panel1 = new JPanel();
     public static JPanel panel2 = new JPanel();
     private JButton[] boton = new JButton[128];
     private JButton guardar = new JButton("Guardar"); 
-    private JButton abrir = new JButton("Abrir");    
+    private JButton abrirCS = new JButton("Abrir CS");    
 
     public static int[][] getCod(){
         return cod;
@@ -43,29 +44,29 @@ public class Tablero extends JPanel implements ActionListener{
         for (int i=0; i<boton.length;i++){
             boton[i]= new JButton(String.valueOf(i+1));
             crearBoton1(boton,i,"boton"+(i));
-        } 
-            crearBoton2(abrir, "abrir");
-            crearBoton2(guardar, "guardar");
-            guardar.setEnabled(false);   
-            panel1.invalidate();
-            panel1.validate();
-            panel1.repaint();
-            panel2.invalidate();
-            panel2.validate();
-            panel2.repaint(); 
+        }
+        crearBoton2(abrirCS, "AbrirCS");
+        crearBoton2(guardar, "guardar");
+        guardar.setEnabled(false);   
+        panel1.invalidate();
+        panel1.validate();
+        panel1.repaint();
+        panel2.invalidate();
+        panel2.validate();
+        panel2.repaint(); 
     }
     
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("guardar")){
             guardarClave();
         }
-        if (e.getActionCommand().equals("abrir")){
-        abrirClave();
+        if (e.getActionCommand().equals("AbrirCS")){
+            abrirClaveSecreta();
         }
         for(int i=0;i<128;i++){
             if (e.getActionCommand().equals("boton"+i)){
             cod[con1][con2] = i+1;
-            procesoBoton(boton,i);
+            procesoBotonCS(boton,i);
             Contadores();
             }
         }    
@@ -87,7 +88,7 @@ public class Tablero extends JPanel implements ActionListener{
         }
     }
 
-    final void procesoBoton(JButton[] i, int k) {
+    final void procesoBotonCS(JButton[] i, int k) {
         switch (contador) {
             case 0:
                 i[k].setBackground(Color.green);
@@ -141,13 +142,7 @@ public class Tablero extends JPanel implements ActionListener{
         i[k].setText(String.valueOf(contadorCod + 1));
         i[k].setEnabled(false);
     }
-
-/*    final void crearBoton(JButton i, String j) {
-            i.setPreferredSize(new Dimension(1, 400));
-            add(i);
-            i.setActionCommand(j);
-            i.addActionListener(this);
-    }*/
+    
     final void crearBoton1(JButton[] i, int k, String j) {
         i[k].setName("k");
         i[k].setPreferredSize(new Dimension(1, 20));
@@ -155,12 +150,14 @@ public class Tablero extends JPanel implements ActionListener{
         i[k].setActionCommand(j);
         i[k].addActionListener(this);       
     }
+    
     final void crearBoton2(JButton i, String j) {    
         i.setPreferredSize(new Dimension(150, 30));
         panel2.add(i);
         i.setActionCommand(j);
         i.addActionListener(this);
     }
+    
     public void guardarClave(){
         try {
             JFileChooser file=new JFileChooser();
@@ -188,14 +185,14 @@ public class Tablero extends JPanel implements ActionListener{
                 out.close();
             }
         } catch (IOException e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
     }  
-    public void abrirClave(){   
+    public void abrirClaveSecreta(){   
          try {
             JFileChooser file=new JFileChooser();
             file.setAcceptAllFileFilterUsed(false);
-            FileFilter filter = new FileNameExtensionFilter("KEY","key");
+            FileFilter filter = new FileNameExtensionFilter("Archivos KEY","key");
             file.addChoosableFileFilter(filter);
             file.showOpenDialog(this);
             File abre=file.getSelectedFile();
@@ -205,14 +202,15 @@ public class Tablero extends JPanel implements ActionListener{
             in.close();
             for (String key : clavePrivada.stringPropertyNames()) {
                     String value = clavePrivada.getProperty(key);
-                    cargarClave(Integer.parseInt(key), Integer.parseInt(value));
+                    cargarClave(Integer.parseInt(key), Integer.parseInt(value), 's');
             } 
             guardar.setEnabled(true);
+            botonDesenc=true;
         } catch (IOException e) {
                 e.printStackTrace();
         }
     }
-     public void cargarClave(int key, int value){
+    public void cargarClave(int key, int value, char clave){
         contador=0;
         if (key<9){
             contador=0;
@@ -263,40 +261,43 @@ public class Tablero extends JPanel implements ActionListener{
             contador=15;
             cod2Pos=key-120;
         }}}}}}}}}}}}}}}}
-        procesoBoton(boton,value-1);
-        boton[value-1].setText(String.valueOf(key));
+        procesoBotonCS(boton,value-1);
+        if(clave=='s'){
+            procesoBotonCS(boton,value-1);
+            boton[value-1].setText(String.valueOf(key));
+        }
         cod[contador][cod2Pos-1]=value;
-     } 
+     }
 
-       private static void createAndShowGUI() {
-            JFrame frame = new JFrame("Encriptador");
-            //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setSize(600, 500); 
-            frame.setVisible(true);
-            frame.getContentPane().setLayout(new GridBagLayout());
-            JScrollPane scrollPane1 = new JScrollPane(panel1);
-            JScrollPane scrollPane2 = new JScrollPane(panel2);
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridwidth = GridBagConstraints.REMAINDER;
-            c.fill = GridBagConstraints.BOTH;
-            c.weightx = 1.0;
-            c.weighty = 1.0; 
-            GridBagConstraints d = new GridBagConstraints();
-            d.gridwidth = GridBagConstraints.REMAINDER;
-            d.fill = GridBagConstraints.BOTH;
-            d.weightx = 0.1;
-            d.weighty = 0.1;
-            frame.add(scrollPane1, c);
-            frame.add(scrollPane2, d);
-            panel1.setLayout(new GridLayout(16,8));
-            panel2.setLayout(new GridBagLayout());  
-            frame.invalidate();
-            frame.validate();
-            frame.repaint();
-        }
+    private static void createAndShowGUI() {
+        JFrame frame = new JFrame("Encriptador");
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setSize(600, 500); 
+        frame.setVisible(true);
+        frame.getContentPane().setLayout(new GridBagLayout());
+        JScrollPane scrollPane1 = new JScrollPane(panel1);
+        JScrollPane scrollPane2 = new JScrollPane(panel2);
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1.0;
+        c.weighty = 1.0; 
+        GridBagConstraints d = new GridBagConstraints();
+        d.gridwidth = GridBagConstraints.REMAINDER;
+        d.fill = GridBagConstraints.BOTH;
+        d.weightx = 0.1;
+        d.weighty = 0.1;
+        frame.add(scrollPane1, c);
+        frame.add(scrollPane2, d);
+        panel1.setLayout(new GridLayout(16,8));
+        panel2.setLayout(new GridBagLayout());  
+        frame.invalidate();
+        frame.validate();
+        frame.repaint();
+    }
 
-        public static void iniciar() {
-            createAndShowGUI();
-        }
+    public static void iniciar() {
+        createAndShowGUI();
+    }
 }
