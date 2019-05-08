@@ -199,19 +199,88 @@ public class Encriptador extends JPanel implements ActionListener {
                         binCod[i][j] = bin1[index1][index2];
                     }
                 }
+                v1 = ((binCod[0][0] * 10000000) 
+                            + ((binCod[0][1] * 1000000) 
+                            + ((binCod[0][2] * 100000) 
+                            + ((binCod[0][3] * 10000) 
+                            + ((binCod[0][4] * 1000) 
+                            + ((binCod[0][5] * 100) 
+                            + ((binCod[0][6] * 10) 
+                            + (binCod[0][7] * 1))))))));
+                v2 = ((binCod[1][0] * 10000000) 
+                            + ((binCod[1][1] * 1000000) 
+                            + ((binCod[1][2] * 100000) 
+                            + ((binCod[1][3] * 10000) 
+                            + ((binCod[1][4] * 1000) 
+                            + ((binCod[1][5] * 100) 
+                            + ((binCod[1][6] * 10) 
+                            + (binCod[1][7] * 1))))))));
+                v3 = ((binCod[2][0] * 10000000) 
+                            + ((binCod[2][1] * 1000000) 
+                            + ((binCod[2][2] * 100000) 
+                            + ((binCod[2][3] * 10000) 
+                            + ((binCod[2][4] * 1000) 
+                            + ((binCod[2][5] * 100) 
+                            + ((binCod[2][6] * 10) 
+                            + (binCod[2][7] * 1))))))));
+                v4 = ((binCod[3][0] * 10000000) 
+                            + ((binCod[3][1] * 1000000) 
+                            + ((binCod[3][2] * 100000) 
+                            + ((binCod[3][3] * 10000) 
+                            + ((binCod[3][4] * 1000) 
+                            + ((binCod[3][5] * 100) 
+                            + ((binCod[3][6] * 10) 
+                            + (binCod[3][7] * 1))))))));
                 break;
         }
-        for (int hg = 0; hg < binCod.length; hg++) {
-            for (int gh = 0; gh < binCod[0].length; gh++) {
-                System.out.print(binCod[hg][gh]);
-                if (gh==binCod[0].length-1) {
-                    System.out.print("\n");
-                }else{
-                    System.out.print("\t");
-                }
-                
-            }
+        v1=BnADec(v1);
+        v2=BnADec(v2);
+        v3=BnADec(v3);
+        v4=BnADec(v4);
+        //showMessageDialog(null, v1 + " " + v2 + " " + v3 + " " + v4);
+        char1 = (char)v1;
+        char2 = (char)v2;
+        char3 = (char)v3;
+        char4 = (char)v4;
+        //showMessageDialog(null, char1 + " " + char2 + " " + char3 + " " + char4);
+        if ((tipo == 0)) {
+            encresult = encresult + char1 + char2 + char3 + char4;
         }
+    }
+    
+    public static String reverseIt(String source) {
+    int i, len = source.length();
+    StringBuilder dest = new StringBuilder(len);
+
+    for (i = (len - 1); i >= 0; i--){
+        dest.append(source.charAt(i));
+    }
+    return dest.toString();
+    }
+    
+    final int BnADec(int v) {
+        String bin;
+        int largo;
+        int numero;
+        String valor;
+        int X;
+        int I;
+        bin = String.valueOf(v);
+//        showMessageDialog(null, "EL valor de v1: " + bin);
+        bin = reverseIt(bin);
+//        showMessageDialog(null, "EL valor de v1 inverso: " + bin);
+        largo = bin.length();
+        v = 0;
+        for (I = 1; I <= largo; I++) {
+            X = (int)(Math.pow(2, (I - 1)));
+            valor=String.valueOf(bin.charAt(I - 1));
+            numero=Integer.parseInt(valor);
+//            showMessageDialog(null, bin.charAt(I - 1));
+            v = v + (numero * X);
+//            showMessageDialog(null, numero + " " + X);
+        }
+//        showMessageDialog(null, "EL valor de v: " + v);
+        return v;
     }
 
     final void crearBoton(JButton i, String j) {
