@@ -50,7 +50,11 @@ public class Tablero extends JPanel implements ActionListener{
     private JButton d6 = new JButton("6");
     private JButton d7 = new JButton("7");
     private JButton d8 = new JButton("8");
-         
+    
+    public static int[][] getCod(){
+        return cod;
+    }
+    
     public Tablero()  {
 //      super(new BorderLayout());
         crearBoton(a1,"a1");
@@ -303,13 +307,11 @@ public class Tablero extends JPanel implements ActionListener{
         frame.getContentPane().setLayout(new GridLayout(4,8));
     }
     
-    /*public static void iniciar() {
-        createAndShowGUI();
-    }*/
-        
-    public static void main(String[] args) {
+    public static void iniciar() {
         createAndShowGUI();
     }
-
-    
+        
+    /*-public static void main(String[] args) {
+        createAndShowGUI();
+    }*/
 }
