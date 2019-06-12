@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+
 public class Tablero extends JPanel implements ActionListener{
     // Creamos los contadores del Tablero
     private int contador;
@@ -149,7 +150,7 @@ public class Tablero extends JPanel implements ActionListener{
       Le decimos a cada boton pasado por parametro en este metodo
       que sea de color gris, lleve por texto un "?" y que este deshabilitado
     */
-    final void procesoBotonCP(JButton[] i, int k) {
+    private void procesoBotonCP(JButton[] i, int k) {
         i[k].setBackground(Color.DARK_GRAY);
         i[k].setText("?");
         i[k].setEnabled(false);
@@ -159,7 +160,7 @@ public class Tablero extends JPanel implements ActionListener{
       Segun el valor de contador elegimos el color de cada boton
       por último cambiamos el texto del boton y lo deshabilitamos
     */
-    final void procesoBotonCS(JButton[] i, int k) {
+    private void procesoBotonCS(JButton[] i, int k) {
         switch (contador) {
             case 0:
                 i[k].setBackground(Color.green);
@@ -218,8 +219,8 @@ public class Tablero extends JPanel implements ActionListener{
       Damos los atributos a los botones del vector y los agregamos al GUI
       también los dejamos a la escucha.
     */
-    final void crearBoton1(JButton[] i, int k, String j) {
-        i[k].setName("k");
+    private void crearBoton1(JButton[] i, int k, String j) {
+        i[k].setName(j);
         i[k].setPreferredSize(new Dimension(1, 20));
         panel1.add(i[k]);                
         i[k].setActionCommand(j);
@@ -229,7 +230,7 @@ public class Tablero extends JPanel implements ActionListener{
     /*
      Creamos el resto de los votones y los ponemos a la escucha.
     */
-    final void crearBoton2(JButton i, String j) {    
+    private void crearBoton2(JButton i, String j) {    
         i.setPreferredSize(new Dimension(150, 30));
         panel2.add(i);
         i.setActionCommand(j);
@@ -240,7 +241,7 @@ public class Tablero extends JPanel implements ActionListener{
       Sirve para guardar tanto la clave secreta como la clave publica.
       pero en este metodo se guarda primero la clave privada y se llama al metodo crearCofre()
     */
-    public void guardarClave(){
+    private void guardarClave(){
         /*
           La estructura Try Catch sirve para preveer errores y responder a los mismos.
         */
@@ -294,7 +295,6 @@ public class Tablero extends JPanel implements ActionListener{
                 claveSecreta.store(out, null);
                 out.close();
             }
-    
         } catch (IOException e) {
                 e.printStackTrace();
         }
@@ -315,9 +315,9 @@ public class Tablero extends JPanel implements ActionListener{
             claveSecreta.load(in);
             in.close();
             /*
-            * Recorremos los valores de la etiquetas key de la clave secreta y
-            * vamos obteniendo su valor y el del valor del value que le hemos 
-            * asigando
+              Recorremos los valores de la etiquetas key de la clave secreta y
+              vamos obteniendo su valor y el del valor del value que le hemos 
+              asigando
             */
             for (String key : claveSecreta.stringPropertyNames()) {
                     String value = claveSecreta.getProperty(key);
@@ -333,7 +333,7 @@ public class Tablero extends JPanel implements ActionListener{
     }
     
     /*
-    * Creamos nuestro Cofre que contendrá la clave secreta pero que servirá de clave pública.
+      Creamos nuestro Cofre que contendrá la clave secreta pero que servirá de clave pública.
     */
     private void crearCofre(){
         // Creamos una serie de variables.
@@ -352,8 +352,8 @@ public class Tablero extends JPanel implements ActionListener{
         // Creamos una instancia de Encriptar que se llama enc1
         Encriptar enc1 =new Encriptar();
         /*
-        * Recorremos cod
-        * Guardamos todos los valores de cod en una String que se llama claveCC
+          Recorremos cod
+          Guardamos todos los valores de cod en una String que se llama claveCC
         */
         for(int i=0; i<cod.length; i++){
             for (int j=0; j<cod[0].length; j++){
@@ -370,7 +370,6 @@ public class Tablero extends JPanel implements ActionListener{
         enc1.setCod(codCP);
         // Encriptamos el contenido de claveCC y lo guardamos en textoEncCofre
         textoEncCofre=enc1.Encriptando(claveCC);
-        
         // Guardamos textoEncCofre en un archivo ".cofre"
         try {
             JFileChooser file=new JFileChooser();
@@ -391,6 +390,9 @@ public class Tablero extends JPanel implements ActionListener{
         } catch (IOException e) {
                 e.printStackTrace();
         }
+        cofre=null;
+        enc1=null;
+        System.gc();
     }
     
     // Abrimos la Clave Publica 
@@ -406,17 +408,17 @@ public class Tablero extends JPanel implements ActionListener{
         FileReader fr2 = null;
         BufferedReader br1 = null;
         BufferedReader br2 = null;
-
         try {
-            // FileReader y FileWriter son clases del paquete java.io que 
-            // nos permiten leer y escribir "streams" de datos y de archivos.
-            // Apertura del fichero y creacion de BufferedReader para poder
-            // hacer una lectura comoda (disponer del metodo readLine()).
+            /* 
+              FileReader y FileWriter son clases del paquete java.io que 
+              nos permiten leer y escribir "streams" de datos y de archivos.
+              Apertura del fichero y creacion de BufferedReader para poder
+              hacer una lectura comoda (disponer del metodo readLine()).
+            */
             fr1 = new FileReader (abre);
             br1 = new BufferedReader(fr1);
             fr2 = new FileReader (abre);
             br2 = new BufferedReader(fr2);
-
             String sCadena;
             // Obtenemos el numero de lineas de nuestro fichero
             long lNumeroLineas = 0;
@@ -439,9 +441,11 @@ public class Tablero extends JPanel implements ActionListener{
         catch(Exception e){
            e.printStackTrace();
         }finally{
-           // En el finally cerramos el fichero, para asegurarnos
-           // que se cierra tanto si todo va bien como si salta 
-           // una excepcion.
+            /* 
+              En el finally cerramos el fichero, para asegurarnos
+              que se cierra tanto si todo va bien como si salta 
+              una excepcion.
+            */
            try{
               if( null != fr1 ){
                  fr1.close();
@@ -479,6 +483,9 @@ public class Tablero extends JPanel implements ActionListener{
         preCargaCP(textoDesencCofre);
         // Deshabilitamos el boton Desencriptar de la clase Encriptador.
         botonDesenc=false;
+        cofre=null;
+        enc1=null;
+        System.gc();
     }
     
     private void preCargaCP(String textoDesenc){
@@ -519,9 +526,9 @@ public class Tablero extends JPanel implements ActionListener{
         }
         m=0;
         /*
-        * Recorremos cod 
-        * Y llamamos al metodo cargarClave con los parametros cPreCarga que se va incrementando,
-        * la posición de cod y la el caracter 'p' que nos dice que la clave es publica
+          Recorremos cod 
+          Y llamamos al metodo cargarClave con los parametros cPreCarga que se va incrementando,
+          la posición de cod y la el caracter 'p' que nos dice que la clave es publica
         */
         for(int i=0; i<cod.length; i++){
             for(int j=0; j<cod[0].length; j++){   
@@ -636,4 +643,5 @@ public class Tablero extends JPanel implements ActionListener{
         // Llamamos al Creador de la GUI
         createAndShowGUI();
     }
+    
 }

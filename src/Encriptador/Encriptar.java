@@ -17,10 +17,6 @@ public class Encriptar {
     */
     private String letra[]=new String[16];
     /*
-      Contiene los números ascii de los caracteres
-    */
-    //private int numero[]=new int[16];
-    /*
       Sirven como primero y segundo indice de la matriz bin1 y bindecod
     */
     private int index1=0;
@@ -79,7 +75,6 @@ public class Encriptar {
         while ((!texto.equals(""))) {
             String linea="|||||||||||||||";
             int n=0;
-//            JOptionPane.showMessageDialog(new JPanel(),texto.length());
             if(texto.length()<16){
                 for(int m=15;m>0;m--){                
                     if ((texto.length() == m)) {
@@ -89,7 +84,6 @@ public class Encriptar {
                     n++;
                 }
             }
-//            showMessageDialog(null, "texto: " + texto);
             n=0;
             this.extraerCaracteres('e');
             this.convertiraBinario(0);
@@ -343,7 +337,7 @@ public class Encriptar {
     private void DecABn(int dec, int binNro, int tipo) {
         int res;
         con1 = 0;
-        while ((con1 < 8)) {
+        while (con1 < 8) {
             bin1[binNro][con1] = 0;
             bin2[binNro][con1] = 0;
             con1++;
@@ -402,8 +396,8 @@ public class Encriptar {
     private void encriptacion(int tipo) {
         int binario[]=new int[16];
         int numero[]=new int[16];
-        for (int i = 0; i <= 15; i++) {
-            for (int j = 0; j <= 7; j++) {
+        for (int i = 0; i < cod.length; i++) {
+            for (int j = 0; j < cod[0].length; j++) {
                 dato = cod[i][j];
                 if (dato<9){
                     index1 = 0;
@@ -505,8 +499,8 @@ public class Encriptar {
                         }
                         break;
         }
-        for(int i=0; i<numero.length;i++){
-            numero[i]=BnADec(numero[i]);
+        for(int i=0; i<binario.length;i++){
+            numero[i]=BnADec(binario[i]);
         }
         for(int i=0; i<letra.length;i++){
             letra[i] = String.valueOf((char)numero[i]);
@@ -618,7 +612,7 @@ public class Encriptar {
             }
         }else{
             int letraCon=0;
-            for(int i=0;i<16;i++){
+            for(int i=0;i<letra.length;i++){
                 if(letra[i].charAt(0)=='|'){
                     letraCon++;      
                 }
@@ -671,7 +665,7 @@ public class Encriptar {
             X = (int)(Math.pow(2, (I - 1)));
             valor=String.valueOf(bin.charAt(I - 1));
             numero=Integer.parseInt(valor);
-            v = v + (numero * X);
+            v += (numero * X);
         }
         return v;
     }

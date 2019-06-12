@@ -20,9 +20,8 @@ public class Encriptador extends JPanel implements ActionListener {
     protected JTextArea Visor2= new JTextArea(10, 20);
     private JButton Encriptar = new JButton("encriptar");
     private JButton Desencriptar = new JButton("desencriptar");
-    //Instanciamos un objeto de la clase Encriptar()
-    private Encriptar enc1 = new Encriptar();
     
+    //Escuchamos los dos botones 
     public void actionPerformed(ActionEvent e) {  
         /*Al presionar en encriptar
           cargamos la matriz cod del tablero1 en enc1
@@ -30,8 +29,12 @@ public class Encriptador extends JPanel implements ActionListener {
           de encriptar el texto de Visor1 
         */
         if (e.getActionCommand().equals("encriptar")){     
+            //Instanciamos un objeto de la clase Encriptar()
+            Encriptar enc1 = new Encriptar();
             enc1.setCod(Tablero.getCod());
             Visor2.setText(enc1.Encriptando(Visor1.getText())); 
+            enc1=null;
+            System.gc();
         }
         /*Al presionar en desencriptar primero hacemos un 
           if donde preguntamos si esta habilitado el boton
@@ -43,12 +46,16 @@ public class Encriptador extends JPanel implements ActionListener {
           de alerta.
         */
         if (e.getActionCommand().equals("desencriptar")){
+            //Instanciamos un objeto de la clase Encriptar()
+            Encriptar enc1 = new Encriptar();
             if(Tablero.getBotonDesenc()){
             enc1.setCod(Tablero.getCod());
             Visor2.setText(enc1.Desencriptando(Visor1.getText()));
-           }else{
+            }else{
                 JOptionPane.showMessageDialog(this, "Al ingresar una Clave Publica usted no puede desencriptar y solamente puede encriptar.","Encriptador", 0);
-           }
+            }
+            enc1=null;
+            System.gc();
         }
     }
     
@@ -56,7 +63,7 @@ public class Encriptador extends JPanel implements ActionListener {
       Vamos creando los botones.
       A cada uno le asignamos un tamaño y un nombre para ser escuchado.
     */
-    final void crearBoton(JButton i, String j) {
+    void crearBoton(JButton i, String j) {
             i.setPreferredSize(new Dimension(200, 30));
             add(i);
             i.setActionCommand(j);
@@ -93,6 +100,7 @@ public class Encriptador extends JPanel implements ActionListener {
     */
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("encriptador");
+        //En caso de ser cerrada la ventana se termina la ejecucion
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new Encriptador());
         frame.pack();
