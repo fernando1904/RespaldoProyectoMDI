@@ -7,14 +7,18 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
@@ -27,14 +31,19 @@ public class Tablero extends JPanel implements ActionListener{
     private int z=0;
     private int cod2Pos=0;
     public static int cod[][] = new int[16][8]; 
+    public static int codCP[][] = new int[16][8]; 
+    private String linea[]=new String[129];
     private int con1 = 0;
     private int con2 = 0;
+    private String clave1="";
+    private String clave2="";
     private static boolean botonDesenc = true;
     public static JPanel panel1 = new JPanel();
     public static JPanel panel2 = new JPanel();
     private JButton[] boton = new JButton[128];
     private JButton guardar = new JButton("Guardar"); 
-    private JButton abrirCS = new JButton("Abrir CS");    
+    private JButton abrirCS = new JButton("Abrir CS"); 
+    private JButton abrirCP = new JButton("Abrir CP");   
 
     public static int[][] getCod(){
         return cod;
@@ -45,6 +54,7 @@ public class Tablero extends JPanel implements ActionListener{
             boton[i]= new JButton(String.valueOf(i+1));
             crearBoton1(boton,i,"boton"+(i));
         }
+        crearBoton2(abrirCP, "AbrirCP");
         crearBoton2(abrirCS, "AbrirCS");
         crearBoton2(guardar, "guardar");
         guardar.setEnabled(false);   
@@ -56,12 +66,19 @@ public class Tablero extends JPanel implements ActionListener{
         panel2.repaint(); 
     }
     
+    public static boolean getBotonDesenc(){
+        return botonDesenc;
+    }
+    
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("guardar")){
+        if (e.getActionCommand().equals("Guardar")){
             guardarClave();
         }
         if (e.getActionCommand().equals("AbrirCS")){
             abrirClaveSecreta();
+        }
+        if (e.getActionCommand().equals("AbrirCP")){
+            abrirClavePublica();
         }
         for(int i=0;i<128;i++){
             if (e.getActionCommand().equals("boton"+i)){
@@ -69,7 +86,7 @@ public class Tablero extends JPanel implements ActionListener{
             procesoBotonCS(boton,i);
             Contadores();
             }
-        }    
+        }      
     }
     
     final void Contadores() {
@@ -87,7 +104,13 @@ public class Tablero extends JPanel implements ActionListener{
             con1++;
         }
     }
-
+    
+    final void procesoBotonCP(JButton[] i, int k) {
+        i[k].setBackground(Color.DARK_GRAY);
+        i[k].setText("?");
+        i[k].setEnabled(false);
+    }
+    
     final void procesoBotonCS(JButton[] i, int k) {
         switch (contador) {
             case 0:
@@ -187,7 +210,9 @@ public class Tablero extends JPanel implements ActionListener{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }  
+        crearCofre();
+    }
+    
     public void abrirClaveSecreta(){   
          try {
             JFileChooser file=new JFileChooser();
@@ -210,6 +235,168 @@ public class Tablero extends JPanel implements ActionListener{
                 e.printStackTrace();
         }
     }
+    
+    public void crearCofre(){
+        String clave="";
+        int contp=1;
+        String llaveCofre="";
+        String textoEncCofre="";
+        Cofre cofre = new Cofre();
+        llaveCofre=JOptionPane.showInputDialog("Ingrese frase para cofre de Clave Publica: ");
+        cofre.setFrase(llaveCofre);
+        codCP=cofre.Cofretizar();
+        Encriptar enc1 =new Encriptar();
+        for(int i=0; i<cod.length; i++){
+            for (int j=0; j<cod[0].length; j++){
+                if (contp==1){
+                    clave = String.valueOf(cod[i][j]);
+                }else{
+                    clave += " " + cod[i][j];                
+                }
+                contp++;
+            }
+        }
+        contp=0;
+        enc1.setCod(codCP);
+        textoEncCofre=enc1.Encriptando(clave);
+//        JOptionPane.showMessageDialog(this, textoEncCofre); 
+//        JOptionPane.showMessageDialog(this, clave);
+        try {
+            JFileChooser file=new JFileChooser();
+            file.setAcceptAllFileFilterUsed(false);
+            FileFilter filter = new FileNameExtensionFilter("Archivos COFRE","cofre");
+            file.addChoosableFileFilter(filter);
+            file.showSaveDialog(this);
+            File guarda = file.getSelectedFile();
+            if(guarda.getName().endsWith(".cofre")){
+                FileWriter escribir=new FileWriter(guarda,false);
+                escribir.write(textoEncCofre);
+                escribir.close();
+//                JOptionPane.showMessageDialog(this, "1");
+            }else{
+                FileWriter escribir=new FileWriter(guarda + ".cofre",false);
+                escribir.write(textoEncCofre);
+                escribir.close();
+//                JOptionPane.showMessageDialog(this, "2");
+            }
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
+    }
+    
+    public void abrirClavePublica(){   
+        JFileChooser file=new JFileChooser();
+        file.setAcceptAllFileFilterUsed(false);
+        FileFilter filter = new FileNameExtensionFilter("Archivos COFRE","cofre");
+        file.addChoosableFileFilter(filter);
+        file.showOpenDialog(this);
+        File abre=file.getSelectedFile();
+        File archivo = null;
+        FileReader fr1 = null;
+        FileReader fr2 = null;
+        BufferedReader br1 = null;
+        BufferedReader br2 = null;
+
+        try {
+            // Apertura del fichero y creacion de BufferedReader para poder
+            // hacer una lectura comoda (disponer del metodo readLine()).
+            fr1 = new FileReader (abre);
+            br1 = new BufferedReader(fr1);
+            fr2 = new FileReader (abre);
+            br2 = new BufferedReader(fr2);
+            // Lectura del fichero
+            String sCadena;
+            long lNumeroLineas = 0;
+            while ((sCadena = br1.readLine())!=null) {
+                lNumeroLineas++;
+            }
+            for(int i=0;i<lNumeroLineas;i++){
+                linea[i]=br2.readLine();
+            }
+            for(int i=0;i<lNumeroLineas;i++){
+                if(clave1.equals("")){
+                    clave1=linea[i];
+                }else{
+                    clave1=clave1+linea[i];
+                }
+            }
+//            JOptionPane.showMessageDialog(this, textoDesencCofre);
+         }
+        catch(Exception e){
+           e.printStackTrace();
+        }finally{
+           // En el finally cerramos el fichero, para asegurarnos
+           // que se cierra tanto si todo va bien como si salta 
+           // una excepcion.
+           try{
+              if( null != fr1 ){
+                 fr1.close();
+              }
+              if( null != fr2 ){
+                 fr2.close();
+              }
+           }catch (Exception e2){
+              e2.printStackTrace();
+           }
+        }
+        abrirCofre();
+        guardar.setEnabled(false);
+    }
+    
+    public void abrirCofre(){
+        String clave="";
+        int contp=1;
+        String llaveCofre="";
+        String textoDesencCofre="";
+        Cofre cofre =new Cofre();
+        llaveCofre=JOptionPane.showInputDialog("Ingrese frase para cofre de Clave Publica: ");
+        cofre.setFrase(llaveCofre);
+        codCP=cofre.Cofretizar();
+        Encriptar enc1 =new Encriptar();
+        enc1.setCod(codCP);
+        textoDesencCofre=enc1.Desencriptando(clave1);
+//        JOptionPane.showMessageDialog(this, textoDesencCofre);
+        preCargaCP(textoDesencCofre);
+        botonDesenc=false;
+    }
+    
+    private void preCargaCP(String textoDesenc){
+        int tamTexto;
+        int m=0;
+        int cPreCarga=1;
+        int g=0;
+        char numeroChar=Character.MIN_VALUE;
+        String textoNumero="";
+        int largoTexto=textoDesenc.length();
+        for(int i=0; i<cod.length; i++){
+            for(int j=0; j<cod[0].length; j++){
+                while(m<largoTexto){
+                    if(textoDesenc.charAt(m)!=' '){
+                        tamTexto = textoDesenc.length();
+                        numeroChar = textoDesenc.charAt(m);
+                    
+                        textoNumero += numeroChar;
+                   
+                        m++;
+                    }else{
+                        break;
+                    }
+                }
+                m++;
+//                System.out.println(textoNumero);
+                cod[i][j]=(int)Double.parseDouble(textoNumero); 
+                textoNumero="";
+            }
+        }
+        m=0;
+        for(int i=0; i<cod.length; i++){
+            for(int j=0; j<cod[0].length; j++){   
+                cargarClave(cPreCarga, cod[i][j], 'p');
+                cPreCarga++;
+            }
+        }
+    }
+    
     public void cargarClave(int key, int value, char clave){
         contador=0;
         if (key<9){
@@ -265,6 +452,9 @@ public class Tablero extends JPanel implements ActionListener{
         if(clave=='s'){
             procesoBotonCS(boton,value-1);
             boton[value-1].setText(String.valueOf(key));
+        }else{
+            procesoBotonCP(boton,value-1);
+            boton[value-1].setText("?");
         }
         cod[contador][cod2Pos-1]=value;
      }
